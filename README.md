@@ -10,13 +10,13 @@ The preferred way to install this extension is through [composer](http://getcomp
 Either run
 
 ```
-php composer.phar require --prefer-dist tugmaks/yii2-google-maps "*"
+php composer.phar require --prefer-dist globaloxs/yii2-google-maps "*"
 ```
 
 or add
 
 ```
-"tugmaks/yii2-google-maps": "*"
+"globaloxs/yii2-google-maps": "*"
 ```
 
 to the require section of your `composer.json` file.
@@ -31,7 +31,7 @@ BASIC USAGE
 Once the extension is installed, simply use it in your code by  :
 
 ```php
-use tugmaks\GoogleMaps\Map;
+use globaloxs\GoogleMaps\Map;
 
 echo Map::widget([
     'zoom' => 16,
@@ -57,7 +57,7 @@ return [
 Or pass it direct to widget. 
 
 ```php
-use tugmaks\GoogleMaps\Map;
+use globaloxs\GoogleMaps\Map;
 
 echo Map::widget([
     'apiKey'=> 'VIza7yBgBzYEbKx09V566DhM8Ylc3NjWsJ0ps-2',
@@ -88,7 +88,7 @@ MARKERS
 One or more marker can be added to map. Just pass marker array to widget config
 
 ```php
-use tugmaks\GoogleMaps\Map;
+use globaloxs\GoogleMaps\Map;
 
 echo Map::widget([
     'zoom' => 5,
@@ -122,7 +122,7 @@ MARKERS FIT BOUNDS
 Sometimes you need to show all markers on map, but do not know initial map center and zoom. In this case use widget like this
 
 ```php
-use tugmaks\GoogleMaps\Map;
+use globaloxs\GoogleMaps\Map;
 
 echo Map::widget([
     'width' => 1100,
