@@ -1,6 +1,6 @@
 <?php
 
-namespace tugmaks\GoogleMaps;
+namespace globaloxs\GoogleMaps;
 
 use Yii;
 
@@ -23,7 +23,7 @@ class Map extends \yii\base\Widget {
     public $height = 600;
     public $widthUnits = self::UNITS_PX;
     public $heightUnits = self::UNITS_PX;
-    public $center = 'г. Москва, ул. Г. Королёва, д.12';
+    public $center = 'Mexico';
     public $zoom = 16;
     public $mapType = 'ROADMAP';
     public $markers = [];
@@ -39,6 +39,7 @@ class Map extends \yii\base\Widget {
     }
 
     public function run() {
+      MapAsset::register($this->getView());
 
         return $this->render('map');
     }
