@@ -29,6 +29,7 @@
         <?php endif; ?>
 
         <?php if (!empty($this->context->markers) && is_array($this->context->markers)): ?>
+        var markers = [];
         <?php foreach ($this->context->markers as $key => $marker): ?>
         var marker_<?= $key ?> = new google.maps.Marker({
             map: window.map
@@ -55,7 +56,9 @@
             }
         });
         <?php endif; ?>
+        markers.push(marker_<?= $key ?>);
         <?php endforeach; ?>
+        var markerCluster = new MarkerClusterer( window.map, markers);
         <?php endif; ?>
 
 
