@@ -1,25 +1,21 @@
-<div style="width: <?= $this->context->width . $this->context->widthUnits?>;
-    height: <?= $this->context->height . $this->context->heightUnits?>">
-    <div id="map_canvas" style="width:100%; height:100%"></div>
-</div>
+<?php if (!$this->context->isAjax): ?>
+    <div style="width: <?= $this->context->width . $this->context->widthUnits?>;
+        height: <?= $this->context->height . $this->context->heightUnits?>">
+        <div id="map_canvas" style="width:100%; height:100%"></div>
+    </div>
+<?php endif; ?>
 <script>
     var map;
     var bounds;
-    function initialize() {
-        var geocoder = new google.maps.Geocoder();
-        window.map = new google.maps.Map(document.getElementById("map_canvas"),
-            {
-                zoom: <?= $this->context->zoom ?>,
-                mapTypeId: google.maps.MapTypeId.<?= $this->context->mapType ?>,
-                center: new google.maps.LatLng(0, 0)
-            }
-        );
+
+    function ajaxMap(){
+        window.markerCluster.clearMarkers();
         <?php if ($this->context->markerFitBounds): ?>
         window.bounds = new google.maps.LatLngBounds();
         <?php elseif (is_array($this->context->center)): ?>
         window.map.setCenter(new google.maps.LatLng(<?= $this->context->center[0] ?>, <?= $this->context->center[1] ?>));
         <?php else: ?>
-        geocoder.geocode({
+        window.geocoder.geocode({
             "address": "<?= $this->context->center ?>"
         }, function (results, status) {
             if (status == google.maps.GeocoderStatus.OK) {
@@ -30,6 +26,37 @@
 
         <?php if (!empty($this->context->markers) && is_array($this->context->markers)): ?>
         var markers = [];
+        var markers_array = <?= \yii\helpers\Json::encode($this->context->markers) ?>;
+        for(var i = 0;i<markers_array.length;i++){
+            var id = 0;if(typeof markers_array[i].id == "number")id = markers_array[i].id;
+            var marker = new google.maps.Marker({map: window.map,id:id});
+            if(typeof markers_array[i].position == "object")
+                marker.setPosition(new google.maps.LatLng(markers_array[i].position[0],markers_array[i].position[1]));
+            else if(typeof markers_array[i].position == "string"){
+                window.geocoder.geocode({
+                    "address": markers_array[i].position
+                }, function (results, status) {
+                    if (status == google.maps.GeocoderStatus.OK)marker.setPosition(results[0].geometry.location);
+                });
+            }
+            <?php if ($this->context->onClickMarker !== null): ?>
+            google.maps.event.addListener(marker, 'click', function() {
+                onClickMarkerCallback(this.id,this,window.map,window.infowindow);
+            });
+            <?php endif; ?>
+            markers.push(marker);
+        }
+        window.markerCluster.addMarkers(markers);
+        <?php endif; ?>
+    }
+    <?php if ($this->context->onClickMarker !== null): ?>
+    function onClickMarkerCallback(id, marker,map, infowindow){
+        var func = <?= $this->context->onClickMarker ?>;
+        func(id, marker,map, infowindow);
+    }
+    <?php endif; ?>
+    <?php if (!$this->context->isAjax): ?>
+    function old(){
         <?php foreach ($this->context->markers as $key => $marker): ?>
         var marker_<?= $key ?> = new google.maps.Marker({
             map: window.map
@@ -44,7 +71,7 @@
         window.map.fitBounds(bounds);
         <?php endif; ?>
         <?php else: ?>
-        geocoder.geocode({
+        window.geocoder.geocode({
             "address": "<?= $marker['position'] ?>"
         }, function (results, status) {
             if (status == google.maps.GeocoderStatus.OK) {
@@ -56,12 +83,40 @@
             }
         });
         <?php endif; ?>
+        <?php if ($this->context->onClickMarker !== null && false): ?>
+        google.maps.event.addListener(marker_<?= $key ?>, 'click', function() {
+            var id = <?= isset($marker['id'])?$marker['id']:0?>;
+            onClickMarkerCallback(id,marker_<?= $key ?>,window.map,window.infowindow);
+        });
+        <?php endif; ?>
         markers.push(marker_<?= $key ?>);
         <?php endforeach; ?>
-        var markerCluster = new MarkerClusterer( window.map, markers);
+        window.markerCluster.addMarkers(markers);
+    }
+    function initialize() {
+        window.geocoder = new google.maps.Geocoder();
+        window.map = new google.maps.Map(document.getElementById("map_canvas"),
+            {
+                zoom: <?= $this->context->zoom ?>,
+                mapTypeId: google.maps.MapTypeId.<?= $this->context->mapType ?>,
+                center: new google.maps.LatLng(0, 0)
+            }
+        );
+        var mcOption = <?= ($this->context->markerClustererOptions == null)?'[]':\yii\helpers\Json::encode($this->context->markerClustererOptions)?>;
+        console.log(mcOption);
+        window.markerCluster = new MarkerClusterer(window.map, null, mcOption);
+        window.infowindow = new google.maps.InfoWindow({
+            content: ''
+        });
+
+        <?php if ($this->context->onDragEnd !== null): ?>
+        window.map.addListener('dragend',<?= $this->context->onDragEnd?>);
+        <?php endif; ?>
+        <?php if ($this->context->onZoomChanged !== null): ?>
+        google.maps.event.addListener(window.map, 'zoom_changed', <?=$this->context->onZoomChanged?>);
         <?php endif; ?>
 
-
+        ajaxMap();
     }
     function loadScript() {
         var script = document.createElement("script");
@@ -70,5 +125,8 @@
         document.body.appendChild(script);
     }
     window.onload = loadScript;
+    <?php else: ?>
+    ajaxMap();
+    <?php endif; ?>
 </script>
 

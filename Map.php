@@ -29,6 +29,11 @@ class Map extends \yii\base\Widget {
     public $markers = [];
     public $apiKey = null;
     public $markerFitBounds = false;
+    public $isAjax = false;
+    public $onClickMarker =null;
+    public $onZoomChanged =null;
+    public $onDragEnd =null;
+    public $markerClustererOptions=null;
 
     public function init() {
         if ($this->apiKey === null) {
@@ -39,7 +44,7 @@ class Map extends \yii\base\Widget {
     }
 
     public function run() {
-      MapAsset::register($this->getView());
+        MapAsset::register($this->getView());
 
         return $this->render('map');
     }
