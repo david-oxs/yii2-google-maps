@@ -33,13 +33,25 @@ Once the extension is installed, simply use it in your code by  :
 ```php
 use globaloxs\GoogleMaps\Map;
 
-echo Map::widget([
-    'zoom' => 16,
-    'center' => 'Red Square',
-    'width' => 700,
-    'height' => 400,
-    'mapType' => Map::MAP_TYPE_SATELLITE,
-]);
+    echo Map::widget([
+        'zoom' => $zoom,
+        'center' => $center,
+        'width' => 850,
+        'height' => 600,
+        'mapType' => Map::MAP_TYPE_ROADMAP,
+        'markers' => $markers,
+        'onClickMarker'=> new \yii\web\JsExpression('function(id, marker,map, infowindow){
+
+        }'),
+        'onZoomChanged' => new \yii\web\JsExpression('function() {
+
+        }'),
+        'onDragEnd' => new \yii\web\JsExpression('function() {
+
+        }'),
+        'markerClustererOptions'=> [
+            'imagePath'=> \yii\helpers\Url::to('@web/imgs/circulo-mc')]
+        ]);
 ```
 
 There are two ways to set API KEY:
