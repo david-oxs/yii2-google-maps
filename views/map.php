@@ -56,43 +56,6 @@
     }
     <?php endif; ?>
     <?php if (!$this->context->isAjax): ?>
-    function old(){
-        <?php foreach ($this->context->markers as $key => $marker): ?>
-        var marker_<?= $key ?> = new google.maps.Marker({
-            map: window.map
-        });
-        <?php if (isset($marker['title'])): ?>
-        marker_<?= $key ?>.setTitle("<?= $marker['title'] ?>");
-        <?php endif; ?>
-        <?php if (is_array($marker['position'])): ?>
-        marker_<?= $key ?>.setPosition(new google.maps.LatLng(<?= $marker['position'][0] ?>, <?= $marker['position'][1] ?>));
-        <?php if ($this->context->markerFitBounds): ?>
-        window.bounds.extend(marker_<?= $key ?>.position);
-        window.map.fitBounds(bounds);
-        <?php endif; ?>
-        <?php else: ?>
-        window.geocoder.geocode({
-            "address": "<?= $marker['position'] ?>"
-        }, function (results, status) {
-            if (status == google.maps.GeocoderStatus.OK) {
-                marker_<?= $key ?>.setPosition(results[0].geometry.location);
-                <?php if ($this->context->markerFitBounds): ?>
-                window.bounds.extend(results[0].geometry.location);
-                window.map.fitBounds(bounds);
-                <?php endif; ?>
-            }
-        });
-        <?php endif; ?>
-        <?php if ($this->context->onClickMarker !== null && false): ?>
-        google.maps.event.addListener(marker_<?= $key ?>, 'click', function() {
-            var id = <?= isset($marker['id'])?$marker['id']:0?>;
-            onClickMarkerCallback(id,marker_<?= $key ?>,window.map,window.infowindow);
-        });
-        <?php endif; ?>
-        markers.push(marker_<?= $key ?>);
-        <?php endforeach; ?>
-        window.markerCluster.addMarkers(markers);
-    }
     function initialize() {
         window.geocoder = new google.maps.Geocoder();
         window.map = new google.maps.Map(document.getElementById("map_canvas"),
@@ -129,4 +92,3 @@
     ajaxMap();
     <?php endif; ?>
 </script>
-
