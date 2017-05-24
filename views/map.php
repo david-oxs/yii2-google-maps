@@ -62,7 +62,8 @@
             {
                 zoom: <?= $this->context->zoom ?>,
                 mapTypeId: google.maps.MapTypeId.<?= $this->context->mapType ?>,
-                center: new google.maps.LatLng(0, 0)
+                center: new google.maps.LatLng(0, 0),
+                gestureHandling: 'greedy'
             }
         );
         var mcOption = <?= ($this->context->markerClustererOptions == null)?'[]':\yii\helpers\Json::encode($this->context->markerClustererOptions)?>;
