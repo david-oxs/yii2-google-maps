@@ -34,6 +34,7 @@ class Map extends \yii\base\Widget {
     public $onZoomChanged =null;
     public $onDragEnd =null;
     public $markerClustererOptions=null;
+    public $gestureHandling="greedy";
 
     public function init() {
         if ($this->apiKey === null) {
